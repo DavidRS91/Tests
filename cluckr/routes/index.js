@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const knex = require('../db');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -35,13 +36,34 @@ router.post('/sign_in', (req, res) => {
   res.redirect('/');
 });
 
-// router.get('/new', (req,res) => {
-//   res.render('new');
-// })
-
-router.post('/new', (req,res) => {
+router.get('/new', (req,res) => {
   res.render('new');
 })
+
+router.post('/new', (req,res) => {
+  // res.render('new');
+  const content = req.body.content;
+  const image_url = req.body.image_url;
+  const username = req.cookies.username;
+
+  knex
+  .insert({
+    content: content,
+    image_url: image_url,
+    username: username
+  })
+  .into('clucks')
+  .then(() => {
+    // Database queries with knex are asynchronous like
+    // setTimeout and setInterval. If you want to write
+    // ANY CODE that depends on results from a query, you
+    // must do it inside of the callback for `then`.
+    res.redirect('/clucks');
+  });
+})
+
+router.post('/', (req, res) => {
+});
 
 router.post('/sign_out', (req, res) => {
   res.clearCookie('username');
