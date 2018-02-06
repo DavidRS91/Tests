@@ -14,36 +14,42 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/clucks', clucks);
-
 app.use((req, res, next) => {
   const username = req.cookies.username;
-  // To read cookies, use the property `cookies` of
-  // the request object. Cookies are read from the request
-  // instead of the response, because the browser
-  // sends its cookies the request's headers.
-  console.log(req.cookies);
-  console.log(req.cookies.username);
-  console.log("test username assignment");
-
   res.locals.username = null;
   if (username) {
-    // All properties of the 'locals' property of the response
-    // object are available as variables in all forms. Use it
-    // to set global variables.
     res.locals.username = username;
   }
   next();
 });
+
+app.locals.timeElapsed = function timeElapsed(ms) {
+  switch (true) {
+    case (ms <= 1000 * 60 * 60):
+    return `${Math.floor(ms/(1000*60))} minutes ago`
+    break;
+    case (ms <= 1000 * 60 * 60 * 24):
+    return `${Math.floor(ms/(1000*60*60))} hours ago`
+    break;
+    case (ms <= 1000 * 60 * 60 * 24 * 365):
+    return `${Math.floor(ms/(1000*60*60*24))} days ago`
+    break;
+    default:
+    return `${Math.floor(ms/(1000*60*60*24*365))} years ago`
+    break;
+
+  }
+};
+
+app.use('/', index);
+app.use('/clucks', clucks);
 
 
 
@@ -61,8 +67,8 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  // res.status(err.status || 500);
-  // res.render('error');
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;

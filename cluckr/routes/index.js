@@ -4,7 +4,7 @@ const knex = require('../db');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index'/*, { title: 'Express' }*/);
+  res.redirect('clucks'/*, { title: 'Express' }*/);
 });
 
 router.get('/sign_in', (req,res) => {
@@ -33,7 +33,7 @@ router.post('/sign_in', (req, res) => {
     // Set-Cookie:username=jonsnow; Max-Age=604800; Path=/; Expires=Thu,08 Feb 2018 18:55:50 GMT
   }
 
-  res.redirect('/');
+  res.redirect('/clucks');
 });
 
 router.get('/new', (req,res) => {
@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
 
 router.post('/sign_out', (req, res) => {
   res.clearCookie('username');
-  res.redirect('/');
+  res.redirect('/sign_out');
 });
 
 module.exports = router;
